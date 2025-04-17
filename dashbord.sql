@@ -1,48 +1,133 @@
--- общее число посещение
 select count visitor_id as num_of_visitors from sessions;
 -- кол-во уникальных пользователей 
 select count (distinct visitor_id) as num_of_visitors from sessions; 
--- 
+-- источник лидов по дням 
 with last_visits as (
     select
-        l.visitor_id,
-        MAX(s.visit_date) as last_visit
+        s.visitor_id,
+        max(s.visit_date) as last_visit
     from sessions as s
-    left join leads as l
-        on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
     where s.medium not in ('organic')
     group by 1
-)
-last_paid as (
-select 
-    s.visitor_id,
-    lv.last_visit as visit_date,
-    s.source as utm_source,
-    s.medium as utm_medium,
-    s.campaign as utm_campaign,
-    l.created_at,
-    l.amount,
-    l.closing_reason,
-    l.status_id
-from last_visits as lv
-left join sessions as s
-    on lv.visitor_id = s.visitor_id and lv.last_visit = s.visit_date
-left join leads as l
-    on s.visitor_id = l.visitor_id
-order by
-    amount desc nulls last,
-    visit_date asc,
-    utm_source asc,
-    utm_campaign asc,
-    utm_medium asc
+),
+last_paid_click as (
+    select
+        s.visitor_id,
+        lv.last_visit as visit_date,
+        s.source as utm_source,
+        s.medium as utm_medium,
+        s.campaign as utm_campaign,
+        l.created_at,
+        l.amount,
+        l.closing_reason,
+        l.status_id
+    from sessions as s
+    inner join last_visits as lv
+        on s.visitor_id = lv.visitor_id and s.visit_date = lv.last_visit
+    left join leads as l
+        on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
+    order by
+        amount desc nulls last,
+        visit_date asc,
+        utm_source asc,
+        utm_campaign asc,
+        utm_medium asc
 )
 select
-    extract(day from visit_date) as visit_day,
-    utm_source, 
-    count(utm_source) as source_count   
-from last_paid 
-group by 1, 2 
+    to_char(visit_date, 'day') as visit_day,
+    utm_source,
+    count(*) as source_count
+from last_paid_click
+group by 1, 2
+order by
+    min((cast(extract(dow from visit_date) as int) + 6) % 7),
+    utm_source;
+-- источник лидов по неделям 
+with last_visits as (
+    select
+        s.visitor_id,
+        max(s.visit_date) as last_visit
+    from sessions as s
+    where s.medium not in ('organic')
+    group by 1
+),
+
+last_paid_click as (
+    select
+        s.visitor_id,
+        lv.last_visit as visit_date,
+        s.source as utm_source,
+        s.medium as utm_medium,
+        s.campaign as utm_campaign,
+        l.created_at,
+        l.amount,
+        l.closing_reason,
+        l.status_id
+    from sessions as s
+    inner join last_visits as lv
+        on s.visitor_id = lv.visitor_id and s.visit_date = lv.last_visit
+    left join leads as l
+        on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
+    order by
+        amount desc nulls last,
+        visit_date asc,
+        utm_source asc,
+        utm_campaign asc,
+        utm_medium asc
+)
+
+select
+    to_char(visit_date, 'w') as visit_week,
+    utm_source,
+    count(*) as source_count
+from last_paid_click
+group by 1, 2
 order by 1, 2;
+-- источник лидов по месяцам
+with last_visits as (
+    select
+        s.visitor_id,
+        max(s.visit_date) as last_visit
+    from sessions as s
+    where s.medium not in ('organic')
+    group by 1
+),
+
+last_paid_click as (
+    select
+        s.visitor_id,
+        lv.last_visit as visit_date,
+        s.source as utm_source,
+        s.medium as utm_medium,
+        s.campaign as utm_campaign,
+        l.created_at,
+        l.amount,
+        l.closing_reason,
+        l.status_id
+    from sessions as s
+    inner join last_visits as lv
+        on s.visitor_id = lv.visitor_id and s.visit_date = lv.last_visit
+    left join leads as l
+        on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
+    order by
+        amount desc nulls last,
+        visit_date asc,
+        utm_source asc,
+        utm_campaign asc,
+        utm_medium asc
+)
+
+select
+    to_char(visit_date, 'mm') as visit_month,
+    utm_source,
+    count(*) as source_count
+from last_paid_click
+group by 1, 2
+order by 1, 2;
+-- количество лидов 
+select count(lead_id) as lead_count from leads;
+
+
 
 
 
