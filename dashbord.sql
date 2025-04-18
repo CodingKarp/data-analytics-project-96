@@ -1,6 +1,7 @@
-select count visitor_id as num_of_visitors from sessions;
+-- общее число пользователей 
+select count(visitor_id) as num_of_visitors from sessions;
 -- кол-во уникальных пользователей 
-select count (distinct visitor_id) as num_of_visitors from sessions; 
+select count (distinct visitor_id) as unique_visitors from sessions; 
 -- источник лидов по дням 
 with last_visits as (
     select
