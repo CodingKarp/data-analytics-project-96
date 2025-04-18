@@ -184,23 +184,22 @@ select
 from visit_lead_purchase;
 
 -- расходы по каждому каналу по неделям 
-select
-    'vk' as source,
-    to_char(campaign_date, 'w'),
-    sum(daily_spent),
-    sum(revenue)
-from vk_ads
-group by 1, 2
-
-union
-
-select
-    'ya' as source,
-    to_char(campaign_date, 'w'),
-    sum(daily_spent)
-from ya_ads
-group by 1, 2
-order by 2;
+select                                                                                                                                                                           
+    'vk' as source,                                                                                                                                                              
+    to_char(campaign_date, 'w') as week_num,                                                                                                                                     
+    sum(daily_spent)                                                                                                                                                             
+from vk_ads                                                                                                                                                                      
+group by 1, 2 
+	
+union  
+	
+select                                                                                                                                                                           
+    'ya' as source,                                                                                                                                                              
+    to_char(campaign_date, 'w') as week_num,                                                                                                                                     
+    sum(daily_spent)                                                                                                                                                             
+from ya_ads                                                                                                                                                                      
+group by 1, 2                                                                                                                                                                    
+order by 2;                                                                                                                                                                      
 
 -- окуппаемость канналов 
 with cost as (
