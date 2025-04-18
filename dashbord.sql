@@ -350,7 +350,7 @@ aggregate_last_paid_click as (
 select
     utm_source as source,
     utm_medium as medium, 
-    utm_campaign as campaign
+    utm_campaign as campaign,
     case
         when
             sum(visitors_count) > 0
