@@ -29,6 +29,54 @@ from sessions
 group by 1, 3
 order by 3;
 
+-- подсчет количества визитов, лидов и покупок 
+with last_visits as (
+    select
+        s.visitor_id,
+        max(s.visit_date) as last_visit
+    from sessions as s
+    where s.medium not in ('organic')
+    group by 1
+),
+	
+last_paid_click as (
+    select
+        s.visitor_id,
+        lv.last_visit as visit_date,
+        s.source as utm_source,
+        s.medium as utm_medium,
+        s.campaign as utm_campaign,
+        l.lead_id,
+        l.created_at,
+        l.amount,
+        l.closing_reason,
+        l.status_id
+    from sessions as s
+    inner join last_visits as lv
+        on s.visitor_id = lv.visitor_id and s.visit_date = lv.last_visit
+    left join leads as l
+        on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
+    order by
+        l.amount desc nulls last,
+        s.visit_date asc,
+        s.source asc,
+        s.campaign asc,
+        s.medium asc
+	
+)
+    select
+        count(distinct visitor_id) as visitors_count,
+        count(distinct lead_id) as leads_count,
+        sum(
+            case
+                when
+                    closing_reason = 'успешно реализовано' or status_id = 142
+                    then 1
+                else 0
+            end
+        ) as purchases_count
+    from last_paid_click;
+
 -- конверсия визит -> лид -> покупка
 with last_visits as (
     select
@@ -102,7 +150,7 @@ from ya_ads
 group by 1, 2                                                                                                                                                                    
 order by 2;                                                                                                                                                                      
 
--- окуппаемость канналов 
+-- окуппаемость каналов 
 with cost as (
 select
     'vk' as source,
