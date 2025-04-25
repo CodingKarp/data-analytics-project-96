@@ -332,7 +332,9 @@ from aggregate_last_paid_click
 where utm_source in ('vk', 'yandex')
 group by 1, 2, 3
 order by 1;
+
 -- агрегированные метрики vk и yandex
+
 with last_visits as (
     select
         s.visitor_id,
@@ -341,6 +343,7 @@ with last_visits as (
     where s.medium not in ('organic')
     group by 1
 ),
+	
 last_paid_click as (
     select
         s.visitor_id,
@@ -365,6 +368,7 @@ last_paid_click as (
         s.campaign asc,
         s.medium asc
 ),
+	
 aggregation as (
     select
         visit_date::date,
@@ -389,6 +393,7 @@ aggregation as (
         utm_medium,
         utm_campaign
 ),
+	
 ad_costs as (
     select
         utm_source,
@@ -408,6 +413,7 @@ ad_costs as (
     from ya_ads
     group by utm_source, utm_medium, utm_campaign, campaign_date
 ),
+	
 aggregate_last_paid_click as (
     select
         a.visit_date,
@@ -432,6 +438,7 @@ aggregate_last_paid_click as (
         visitors_count desc,
         utm_source asc, utm_medium asc, utm_campaign asc
 )
+	
 select
     utm_source as source,
     case
