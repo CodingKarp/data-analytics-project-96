@@ -38,7 +38,7 @@ aggregation as (
         utm_source,
         utm_medium,
         utm_campaign,
-        COUNT(visitor_id) as visitors_count,
+        COUNT(distinct visitor_id) as visitors_count,
         COUNT(lead_id) as leads_count,
         SUM(
             case
