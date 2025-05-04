@@ -95,9 +95,8 @@ left join ad_costs as ac
         and a.utm_medium = ac.utm_medium
         and a.utm_campaign = ac.utm_campaign
 order by
-    revenue desc nulls last,
-    visit_date asc,
-    visitors_count desc,
-    utm_source asc, utm_medium asc, utm_campaign asc
+    a.revenue desc nulls last,
+    a.visit_date asc,
+    a.visitors_count desc,
+    a.utm_source asc, a.utm_medium asc, a.utm_campaign asc
 limit 15;
-
