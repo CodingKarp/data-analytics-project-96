@@ -4,7 +4,7 @@ with last_visits as (
         MAX(s.visit_date) as last_visit
     from sessions as s
     where s.medium not in ('organic')
-    group by 1
+    group by s.visitor_id
 ),
 
 last_paid_click as (
@@ -34,7 +34,7 @@ last_paid_click as (
 
 aggregation as (
     select
-        visit_date::date,
+        CAST(visit_date AS date) as visit_date,
         utm_source,
         utm_medium,
         utm_campaign,
@@ -51,7 +51,7 @@ aggregation as (
         SUM(amount) as revenue
     from last_paid_click
     group by
-        visit_date::date,
+        CAST(visit_date AS date),
         utm_source,
         utm_medium,
         utm_campaign
@@ -66,7 +66,9 @@ ad_costs as (
         SUM(daily_spent) as total_cost
     from vk_ads
     group by utm_source, utm_medium, utm_campaign, campaign_date
+
     union all
+
     select
         utm_source,
         utm_medium,
@@ -90,14 +92,16 @@ select
 from aggregation as a
 left join ad_costs as ac
     on
-        a.visit_date = ac.campaign_date::date
+        a.visit_date = CAST(ac.campaign_date AS date)
         and a.utm_source = ac.utm_source
         and a.utm_medium = ac.utm_medium
         and a.utm_campaign = ac.utm_campaign
 order by
-    revenue desc nulls last,
-    visit_date asc,
-    visitors_count desc,
-    utm_source asc, utm_medium asc, utm_campaign asc
+    a.revenue desc nulls last,
+    a.visit_date asc,
+    a.visitors_count desc,
+    a.utm_source asc,
+    a.utm_medium asc,
+    a.utm_campaign asc
 limit 15;
 
