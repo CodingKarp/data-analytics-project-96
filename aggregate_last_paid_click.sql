@@ -79,10 +79,10 @@ ad_costs as (
 
 select
     a.visit_date,
+    a.visitors_count,
     a.utm_source,
     a.utm_medium,
     a.utm_campaign,
-    a.visitors_count,
     ac.total_cost,
     a.leads_count,
     a.purchases_count,
