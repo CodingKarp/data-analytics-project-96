@@ -1,3 +1,4 @@
+-- подзапроос находит последние визиты пользователей 
 with last_visits as (
     select
         l.visitor_id,
@@ -15,6 +16,7 @@ select distinct
     s.source as utm_source,
     s.medium as utm_medium,
     s.campaign as utm_campaign,
+    l.lead_id,
     l.created_at,
     l.amount,
     l.closing_reason,
