@@ -1,4 +1,4 @@
--- Подзапрос находит последние визиты пользователей
+-- подзапроос находит последние визиты пользователей 
 with last_visits as (
     select
         l.visitor_id,
@@ -7,7 +7,7 @@ with last_visits as (
     left join leads as l
         on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
     where s.medium not in ('organic')
-    group by l.visitor_id
+    group by 1
 )
 
 select distinct
@@ -25,11 +25,11 @@ from last_visits as lv
 left join sessions as s
     on lv.visitor_id = s.visitor_id and lv.last_visit = s.visit_date
 left join leads as l
-    on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
+    on s.visitor_id = l.visitor_id
 order by
     l.amount desc nulls last,
-    lv.last_visit asc,
-    s.source asc,
-    s.campaign asc,
-    s.medium asc
+    visit_date asc,
+    utm_source asc,
+    utm_campaign asc,
+    utm_medium asc
 limit 10;
