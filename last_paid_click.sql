@@ -27,7 +27,7 @@ left join sessions as s
 left join leads as l
     on s.visitor_id = l.visitor_id
 order by
-    amount desc nulls last,
+    l.amount desc nulls last,
     visit_date asc,
     utm_source asc,
     utm_campaign asc,
