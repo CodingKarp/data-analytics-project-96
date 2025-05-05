@@ -63,7 +63,7 @@ ad_costs as (
         utm_medium,
         utm_campaign,
         campaign_date,
-        SUM(daily_spent) as total_cost
+        sum(daily_spent) as total_cost
     from vk_ads
     group by utm_source, utm_medium, utm_campaign, campaign_date
     union all
