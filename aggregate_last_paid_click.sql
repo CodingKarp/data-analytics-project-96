@@ -1,10 +1,10 @@
 with last_visits as (
     select
         s.visitor_id,
-        MAX(s.visit_date) as last_visit
+        max(s.visit_date) as last_visit
     from sessions as s
     where s.medium not in ('organic')
-    group by 1
+    group by s.visitor_id
 ),
 
 last_paid_click as (
