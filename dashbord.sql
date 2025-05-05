@@ -140,7 +140,7 @@ select
     to_char(campaign_date, 'w') as week_num,
     sum(daily_spent) as total_spent
 from vk_ads
-group by source, to_char(campaign_date, 'w') 
+group by source, to_char(campaign_date, 'w')
 
 union
 
@@ -149,7 +149,7 @@ select
     to_char(campaign_date, 'w') as week_num,
     sum(daily_spent) as total_spent
 from ya_ads
-group by source, to_char(campaign_date, 'w') 
+group by source, to_char(campaign_date, 'w')
 order by to_char(campaign_date, 'w');
 
 -- окуппаемость каналов 
@@ -298,7 +298,7 @@ aggregate_last_paid_click as (
         a.revenue desc nulls last,
         a.isit_date asc,
         a.visitors_count desc,
-        a.utm_source asc, utm_medium asc, utm_campaign asc
+        a.utm_source asc, a.utm_medium asc, a.utm_campaign asc
 )
 
 select
@@ -335,14 +335,5 @@ select
     end as roi
 from aggregate_last_paid_click
 where utm_source in ('vk', 'yandex')
-group by  utm_source, utm_medium, utm_campaign
+group by utm_source, utm_medium, utm_campaign
 order by utm_source;
-
-
-
-
-
-
-
-
-
