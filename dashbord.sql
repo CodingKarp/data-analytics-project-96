@@ -8,8 +8,8 @@ select
     count(*) as visitor_count,
     date_trunc('day', visit_date) as visit_date
 from sessions
-group by 1, 3
-order by 3;
+group by source, date_trunc('day', visit_date)
+order by date_trunc('day', visit_date);
 -- количество лидов 
 select count(lead_id) as lead_count from leads;
 -- источиники посетителей по неделям 
@@ -18,16 +18,16 @@ select
     count(*) as visitor_count,
     date_trunc('week', visit_date) as visit_date
 from sessions
-group by 1, 3
-order by 3;
+group by source, date_trunc('week', visit_date)
+order by date_trunc('week', visit_date);
 -- источники посетителей по месяцам 
 select
     source,
     count(*) as visitor_count,
     date_trunc('month', visit_date) as visit_date
 from sessions
-group by 1, 3
-order by 3;
+group by source, date_trunc('month', visit_date)
+order by date_trunc('month', visit_date);
 
 -- подсчет количества визитов, лидов и покупок 
 with last_visits as (
@@ -36,7 +36,7 @@ with last_visits as (
         max(s.visit_date) as last_visit
     from sessions as s
     where s.medium not in ('organic')
-    group by 1
+    group by s.visitor_id
 ),
 
 last_paid_click as (
@@ -86,7 +86,7 @@ with last_visits as (
         max(s.visit_date) as last_visit
     from sessions as s
     where s.medium not in ('organic')
-    group by 1
+    group by s.visitor_id
 ),
 
 last_paid_click as (
