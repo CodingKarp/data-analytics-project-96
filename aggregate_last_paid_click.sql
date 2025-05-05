@@ -38,9 +38,9 @@ aggregation as (
         utm_source,
         utm_medium,
         utm_campaign,
-        COUNT(distinct visitor_id) as visitors_count,
-        COUNT(lead_id) as leads_count,
-        SUM(
+        count(distinct visitor_id) as visitors_count,
+        count(lead_id) as leads_count,
+        sum(
             case
                 when
                     closing_reason = 'Успешно реализовано' or status_id = 142
@@ -48,7 +48,7 @@ aggregation as (
                 else 0
             end
         ) as purchases_count,
-        SUM(amount) as revenue
+        sum(amount) as revenue
     from last_paid_click
     group by
         visit_date::date,
@@ -72,7 +72,7 @@ ad_costs as (
         utm_medium,
         utm_campaign,
         campaign_date,
-        SUM(daily_spent) as total_cost
+        sum(daily_spent) as total_cost
     from ya_ads
     group by utm_source, utm_medium, utm_campaign, campaign_date
 )
