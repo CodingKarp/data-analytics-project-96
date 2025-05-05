@@ -2,12 +2,12 @@
 with last_visits as (
     select
         l.visitor_id,
-        MAX(s.visit_date) as last_visit
+        max(s.visit_date) as last_visit
     from sessions as s
     left join leads as l
         on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
     where s.medium not in ('organic')
-    group by 1
+    group by l.visitor_id
 )
 
 select distinct
